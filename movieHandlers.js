@@ -5,9 +5,12 @@ const getMovies = (req, res) => {
   const where = [];
 
   if (req.query.color != null) {
-    where.push({ column: "color", value: req.query.color, operator: "=" });
+    where.push({
+      column: "color",
+      value: req.query.color,
+      operator: "=",
+    });
   }
-
   if (req.query.max_duration != null) {
     where.push({
       column: "duration",
@@ -30,7 +33,7 @@ const getMovies = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error retrieving data from db.");
+      res.status(500).send("Error retrieving data from database");
     });
 };
 
@@ -40,15 +43,15 @@ const getMovieById = (req, res) => {
   database
     .query("select * from movies where id = ?", [id])
     .then(([movies]) => {
-      if (movies.length > 0) {
+      if (movies[0] != null) {
         res.json(movies[0]);
       } else {
-        res.status(404).send("Movie not found...");
+        res.status(404).send("Not Found");
       }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error retrieving data from db.");
+      res.status(500).send("Error retrieving data from database");
     });
 };
 
@@ -69,13 +72,13 @@ const postMovie = (req, res) => {
     });
 };
 
-const putMovie = (req, res) => {
+const updateMovie = (req, res) => {
   const id = parseInt(req.params.id);
   const { title, director, year, color, duration } = req.body;
 
   database
     .query(
-      "UPDATE movies SET title = ?, director = ?, year = ?, color = ?, duration = ? WHERE id = ?",
+      "update movies set title = ?, director = ?, year = ?, color = ?, duration = ? where id = ?",
       [title, director, year, color, duration, id]
     )
     .then(([result]) => {
@@ -87,7 +90,7 @@ const putMovie = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error saving the movie");
+      res.status(500).send("Error editing the movie");
     });
 };
 
@@ -95,7 +98,7 @@ const deleteMovie = (req, res) => {
   const id = parseInt(req.params.id);
 
   database
-    .query("DELETE FROM movies WHERE id = ?", [id])
+    .query("delete from movies where id = ?", [id])
     .then(([result]) => {
       if (result.affectedRows === 0) {
         res.status(404).send("Not Found");
@@ -113,6 +116,6 @@ module.exports = {
   getMovies,
   getMovieById,
   postMovie,
-  putMovie,
+  updateMovie,
   deleteMovie,
 };
